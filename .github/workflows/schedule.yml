@@ -33,4 +33,4 @@ jobs:
           CELCAT_LIST_URL: ${{ secrets.CELCAT_LIST_URL }}
           TZ_NAME: ${{ secrets.TZ_NAME || 'Europe/Paris' }}
           POST_AT_HOUR: "20"
-        run: python celcat_html_to_discord.py
+        run: python celcat_to_discord.py

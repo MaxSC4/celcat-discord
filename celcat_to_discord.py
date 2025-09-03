@@ -45,6 +45,10 @@ def week_url_for(date_obj: dt.date) -> str:
     new_query = urlencode(q, doseq=True)
     return urlunparse(parsed._replace(query=new_query))
 
+# ---- Garde-fou horaire: ne poste qu'à POST_AT_HOUR (default 20:00) Europe/Paris ----
+def should_post_now(now_dt: dt.datetime) -> bool:
+    target_hour = int(os.getenv("POST_AT_HOUR", "20"))
+    return now_dt.hour == target_hour
 # ------------ Parsing heuristique ------------
 MONTHS = {
     "january":1,"february":2,"march":3,"april":4,"may":5,"june":6,"july":7,"august":8,"september":9,"october":10,"november":11,"december":12,
@@ -221,6 +225,8 @@ def post_discord(payload: dict):
 # ------------ Main ------------
 async def main():
     now = now_paris()
+    if not should_post_now(now):
+        return
     tomorrow = (now + dt.timedelta(days=1)).date()
     week_url = week_url_for(tomorrow)
     full_text = await fetch_week_text(week_url)
